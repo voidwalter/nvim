@@ -4,6 +4,15 @@
 vim.cmd.colorscheme 'tokyonight-night'
 
 do
+  --
+  -- require 'plugins.debug'
+  -- require 'plugins.indent_line'
+  require 'plugins.interface'
+  require 'plugins.misc'
+  -- require 'plugins.gitsigns' -- adds gitsigns recommended keymaps
+end
+
+do
   vim.loader.enable() -- Enable faster startup by caching compiled Lua modules
 
   vim.g.mapleader = ' '
@@ -140,14 +149,24 @@ local function gh(repo) return 'https://github.com/' .. repo end
 -- SECTION 3: CORE PLUGINS
 -- ============================================================
 do
-  vim.pack.add { gh 'NMAC427/guess-indent.nvim' }
-  require('guess-indent').setup {}
+  vim.pack.add { gh 'nvim-tree/nvim-web-devicons' }
 
-  if vim.g.have_nerd_font then vim.pack.add { gh 'nvim-tree/nvim-web-devicons' } end
+  vim.pack.add { gh 'folke/tokyonight.nvim' }
+  ---@diagnostic disable-next-line: missing-fields
+  require('tokyonight').setup {
+    style = 'moon',
+    transparent = false,
+    terminal_colors = true,
+    styles = {
+      comments = { italic = true },
+      keywords = { italic = true },
+      floats = 'transparent',
+      sidebars = 'transparent',
+    },
+  }
 
-  -- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
-  --
-  -- See `:help gitsigns` to understand what each configuration key does.
+  vim.cmd.colorscheme 'tokyonight-night'
+
   -- Adds git related signs to the gutter, as well as utilities for managing changes
   vim.pack.add { gh 'lewis6991/gitsigns.nvim' }
   require('gitsigns').setup {
@@ -166,23 +185,6 @@ do
       col = 1,
     },
   }
-
-  vim.pack.add { gh 'folke/which-key.nvim' }
-  require('which-key').setup {
-    delay = 0,
-    preset = 'helix',
-    icons = { mappings = vim.g.have_nerd_font },
-    -- Document existing key chains
-    spec = {
-      { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
-      { '<leader>t', group = '[T]oggle' },
-      { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
-      { 'gr', group = 'LSP Actions', mode = { 'n' } },
-    },
-  }
-  -- Highlight todo, notes, etc in comments
-  vim.pack.add { gh 'folke/todo-comments.nvim' }
-  require('todo-comments').setup { signs = false }
 
   -- [[ mini.nvim ]]
   --  A collection of various small independent plugins/modules
@@ -585,23 +587,3 @@ do
     end,
   })
 end
-
--- ============================================================
--- SECTION 9: Others
--- ============================================================
-do
-  --
-  -- require 'plugins.debug'
-  -- require 'plugins.indent_line'
-  -- require 'plugins.lint'
-  require 'plugins.misc'
-  -- require 'plugins.gitsigns' -- adds gitsigns recommended keymaps
-
-  -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- require 'custom.plugins'
-end
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
