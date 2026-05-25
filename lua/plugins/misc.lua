@@ -1,10 +1,12 @@
--- Neo-tree is a Neovim plugin to browse the file system
--- https://github.com/nvim-neo-tree/neo-tree.nvim
+-- autopairs
+-- https://github.com/windwp/nvim-autopairs
 
 local plugins = {
   { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim', version = vim.version.range '*' },
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/MunifTanjim/nui.nvim',
+  'https://github.com/lukas-reineke/indent-blankline.nvim',
+  'https://github.com/windwp/nvim-autopairs',
 }
 
 if vim.g.have_nerd_font then
@@ -24,3 +26,7 @@ require('neo-tree').setup {
     },
   },
 }
+
+require('nvim-autopairs').setup {}
+
+require('ibl').setup {}
