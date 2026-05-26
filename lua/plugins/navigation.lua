@@ -1,51 +1,88 @@
+-- search and navigation
+
 local plugins = {
+  'https://github.com/romgrk/barbar.nvim',
   {
-    src = 'https://github.com/romgrk/barbar.nvim',
+    src = 'https://github.com/nvim-telescope/telescope.nvim',
+    version = 'v0.2.2',
     dependencies = {
-      'https://github.com/lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
-      'https://github.com/nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+      'https://github.com/nvim-lua/plenary.nvim',
+      'https://github.com/nvim-telescope/telescope-ui-select.nvim',
+      { 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     },
   },
 }
 
 vim.pack.add(plugins)
-local map = vim.api.nvim_set_keymap
-local opts = { noremap = true, silent = true }
 
--- Move to previous/next
-map('n', '<Space>[', '<Cmd>BufferPrevious<CR>', opts)
-map('n', '<Space>]', '<Cmd>BufferNext<CR>', opts)
-map('n', '<Space>b[', '<Cmd>BufferMovePrevious<CR>', opts)
-map('n', '<Space>b]', '<Cmd>BufferMoveNext<CR>', opts)
+-- Enable Telescope extensions if they are installed
+pcall(require('telescope').load_extension, 'fzf')
+pcall(require('telescope').load_extension, 'ui-select')
 
--- Goto buffer in position...
-map('n', '<Space>1', '<Cmd>BufferGoto 1<CR>', opts)
-map('n', '<Space>2', '<Cmd>BufferGoto 2<CR>', opts)
-map('n', '<Space>3', '<Cmd>BufferGoto 3<CR>', opts)
-map('n', '<Space>4', '<Cmd>Space>ferGoto 4<CR>', opts)
-map('n', '<Space>5', '<Cmd>BufferGoto 5<CR>', opts)
-map('n', '<Space>6', '<Cmd>BufferGoto 6<CR>', opts)
-map('n', '<Space>7', '<Cmd>BufferGoto 7<CR>', opts)
-map('n', '<Space>8', '<Cmd>BufferGoto 8<CR>', opts)
-map('n', '<Space>9', '<Cmd>BufferGoto 9<CR>', opts)
-map('n', '<Space>0', '<Cmd>BufferLast<CR>', opts)
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+    },
+  },
+  -- pickers = {}
+  extensions = {
+    ['ui-select'] = { require('telescope.themes').get_dropdown() },
+  },
+}
 
-map('n', '<Space>bp', '<Cmd>BufferPin<CR>', opts)
-map('n', '<Space>bc', '<Cmd>BufferClose<CR>', opts)
-map('n', '<Space>.', '<Cmd>BufferPick<CR>', opts)
-map('n', '<Space>b.', '<Cmd>BufferPickDelete<CR>', opts)
+local builtin = require 'telescope.builtin'
+-- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('telescope-lsp-attach', { clear = true }),
+  callback = function(event)
+    local buf = event.buf
 
--- Sort automatically by...
-map('n', '<Space>bb', '<Cmd>BufferOrderByBufferNumber<CR>', opts)
-map('n', '<Space>bn', '<Cmd>BufferOrderByName<CR>', opts)
-map('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
-map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
-map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+    -- Find references for the word under cursor.
+    vim.keymap.set('n', 'grr', builtin.lsp_references, { buffer = buf, desc = '[G]oto [R]eferences' })
+
+    -- Jump to the implementation of the word under cursor.
+    vim.keymap.set('n', 'gri', builtin.lsp_implementations, { buffer = buf, desc = '[G]oto [I]mplementation' })
+
+    -- Jump to the definition of the word under cursor. press <C-t>, to jump back
+    vim.keymap.set('n', 'grd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
+
+    -- Fuzzy find all the symbols ( variables, functions, types ) in current buffer.
+    vim.keymap.set('n', 'gO', builtin.lsp_document_symbols, { buffer = buf, desc = 'Open Document Symbols' })
+
+    -- Fuzzy find all the symbols in current workspace.
+    vim.keymap.set('n', 'gW', builtin.lsp_dynamic_workspace_symbols, { buffer = buf, desc = 'Open Workspace Symbols' })
+
+    -- Jump to the type of the word under the cursor.
+    vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, { buffer = buf, desc = '[G]oto [T]ype Definition' })
+  end,
+})
+
+vim.keymap.set(
+  'n',
+  '<leader>/',
+  function() builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown { winblend = 10, previewer = false }) end,
+  { desc = '[/] search in current buffer' }
+)
+
+vim.keymap.set(
+  'n',
+  '<leader>s/',
+  function() builtin.live_grep { grep_open_files = true, prompt_title = 'Live Grep (active)' } end,
+  { desc = 'Grep in open files' }
+)
+
+vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[N]eovim config files' })
+
+-- ===============
+-- buffer (barbar)
+
+-- others
 
 require('barbar').setup {
   animation = true,
   auto_hide = true,
-  clickable = false,
+  clickable = true,
   focus_on_close = 'left',
   highlight_alternate = false,
   highlight_inactive_file_icons = false,

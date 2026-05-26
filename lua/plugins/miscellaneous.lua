@@ -1,4 +1,30 @@
-vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
+local plugins = {
+  { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim', version = vim.version.range '*' },
+  'https://github.com/nvim-lua/plenary.nvim',
+  'https://github.com/MunifTanjim/nui.nvim',
+  'https://github.com/lukas-reineke/indent-blankline.nvim',
+  'https://github.com/NMAC427/guess-indent.nvim',
+  'https://github.com/folke/which-key.nvim',
+  'https://github.com/folke/todo-comments.nvim',
+  'https://github.com/onsails/lspkind.nvim',
+  'https://github.com/lewis6991/gitsigns.nvim',
+}
+
+if vim.g.have_nerd_font then
+  table.insert(plugins, 'https://github.com/nvim-tree/nvim-web-devicons') -- not strictly required, but recommended
+end
+
+vim.pack.add(plugins)
+
+require('neo-tree').setup {
+  filesystem = {
+    window = {
+      mappings = {
+        ['\\'] = 'close_window',
+      },
+    },
+  },
+}
 
 require('gitsigns').setup {
   max_file_length = 40000, -- Disable if file is longer than this (in lines)
@@ -64,4 +90,33 @@ require('gitsigns').setup {
     -- Text object
     map({ 'o', 'x' }, 'ih', gitsigns.select_hunk)
   end,
+}
+
+require('which-key').setup {
+  delay = 0,
+  preset = 'helix',
+  icons = { mappings = vim.g.have_nerd_font },
+  spec = {
+    { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
+    { '<leader>t', group = '[T]oggle' },
+    { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
+    { 'gr', group = 'LSP Actions', mode = { 'n' } },
+  },
+}
+
+require('lspkind').init {
+  -- options: 'text', 'text_symbol', 'symbol_text', 'symbol'
+  mode = 'symbol_text',
+  preset = 'default',
+}
+
+require('todo-comments').setup { signs = false }
+require('guess-indent').setup {}
+require('ibl').setup {
+  exclude = {
+    filetypes = {
+      'dashboard',
+      'dashboard-nvim',
+    },
+  },
 }

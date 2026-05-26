@@ -2,15 +2,13 @@
 -- Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 
 do
-  --
   -- require 'plugins.debug'
-
   require 'plugins.navigation'
   require 'plugins.completion'
   require 'plugins.formating'
   require 'plugins.interface'
-  require 'plugins.misc'
-  require 'plugins.gitsigns'
+  require 'plugins.minix'
+  require 'plugins.miscellaneous'
 end
 
 do
@@ -40,6 +38,9 @@ do
   vim.o.scrolloff = 10
   vim.o.confirm = true
 
+  vim.opt.tabstop = 2
+  vim.opt.shiftwidth = 2
+
   -- [[ Basic Keymaps ]]
   vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
@@ -67,25 +68,79 @@ do
     },
   }
 
-  vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+  -- =====================
+  -- ===== KEYMAPS =======
 
-  vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+  local map = vim.keymap.set
+  local opts = { noremap = true, silent = true }
 
-  vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-  vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-  vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-  vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+  map('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+  map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
-  vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-  vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-  vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-  vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+  map('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+  map('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+  map('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+  map('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
-  -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
-  -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
-  -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
-  -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
-  -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+  map('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+  map('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+  map('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+  map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+  -- map("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
+  -- map("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
+  -- map("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
+  -- map("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+  -- Move to previous/next
+  map('n', '<Space>[', '<Cmd>BufferPrevious<CR>', opts)
+  map('n', '<Space>]', '<Cmd>BufferNext<CR>', opts)
+  map('n', '<Space>b[', '<Cmd>BufferMovePrevious<CR>', opts)
+  map('n', '<Space>b]', '<Cmd>BufferMoveNext<CR>', opts)
+
+  -- Goto buffer in position...
+  map('n', '<Space>1', '<Cmd>BufferGoto 1<CR>', opts)
+  map('n', '<Space>2', '<Cmd>BufferGoto 2<CR>', opts)
+  map('n', '<Space>3', '<Cmd>BufferGoto 3<CR>', opts)
+  map('n', '<Space>4', '<Cmd>BufferGoto 4<CR>', opts)
+  map('n', '<Space>5', '<Cmd>BufferGoto 5<CR>', opts)
+  map('n', '<Space>6', '<Cmd>BufferGoto 6<CR>', opts)
+  map('n', '<Space>7', '<Cmd>BufferGoto 7<CR>', opts)
+  map('n', '<Space>8', '<Cmd>BufferGoto 8<CR>', opts)
+  map('n', '<Space>9', '<Cmd>BufferGoto 9<CR>', opts)
+  map('n', '<Space>0', '<Cmd>BufferLast<CR>', opts)
+
+  map('n', '<Space>bp', '<Cmd>BufferPin<CR>', opts)
+  map('n', '<Space>bc', '<Cmd>BufferClose<CR>', opts)
+  map('n', '<Space>.', '<Cmd>BufferPick<CR>', opts)
+  map('n', '<Space>b.', '<Cmd>BufferPickDelete<CR>', opts)
+
+  -- Sort automatically by...
+  map('n', '<Space>bb', '<Cmd>BufferOrderByBufferNumber<CR>', opts)
+  map('n', '<Space>bn', '<Cmd>BufferOrderByName<CR>', opts)
+  map('n', '<Space>bd', '<Cmd>BufferOrderByDirectory<CR>', opts)
+  map('n', '<Space>bl', '<Cmd>BufferOrderByLanguage<CR>', opts)
+  map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
+
+  -- telescope
+  local builtin = require 'telescope.builtin'
+  map('n', '<leader>sf', function() builtin.find_files() end, { desc = '[S]earch [F]iles' })
+  map('n', '<leader>sg', function() builtin.live_grep() end, { desc = '[S]earch by [G]rep' })
+  map('n', '<leader>sh', function() builtin.help_tags() end, { desc = '[S]earch [H]elp' })
+  map('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
+  map('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+  map('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+  map('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+  map('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+  map('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+  map('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
+  map('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+  map('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+  map('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
+  map('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+  map('n', '\\', '<Cmd>Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
+  map('n', '<Space>tt', 'Cmd>TransparentToggle<CR>', { desc = 'Toggle Transparency' })
 
   -- [[ Basic Autocommands ]]
   --  See `:help lua-guide-autocommands`
@@ -167,156 +222,10 @@ do
   }
 
   vim.cmd.colorscheme 'tokyonight-night'
-
-  -- [[ mini.nvim ]]
-  --  A collection of various small independent plugins/modules
-  vim.pack.add { gh 'nvim-mini/mini.nvim' }
-
-  -- Better Around/Inside textobjects
-  --
-  -- Examples:
-  --  - va)  - [V]isually select [A]round [)]paren
-  --  - yiiq - [Y]ank [I]nside [I]+1 [Q]uote
-  --  - ci'  - [C]hange [I]nside [']quote
-  require('mini.ai').setup {
-    -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
-    mappings = {
-      around_next = 'aa',
-      inside_next = 'ii',
-    },
-    n_lines = 500,
-  }
-
-  -- Add/delete/replace surroundings (brackets, quotes, etc.)
-  --
-  -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-  -- - sd'   - [S]urround [D]elete [']quotes
-  -- - sr)'  - [S]urround [R]eplace [)] [']
-  require('mini.surround').setup()
-
-  -- Simple and easy statusline.
-  --  You could remove this setup call if you don't like it,
-  --  and try some other statusline plugin
-  local statusline = require 'mini.statusline'
-  -- Set `use_icons` to true if you have a Nerd Font
-  statusline.setup { use_icons = vim.g.have_nerd_font }
-
-  -- You can configure sections in the statusline by overriding their
-  -- default behavior. For example, here we set the section for
-  -- cursor location to LINE:COLUMN
-  ---@diagnostic disable-next-line: duplicate-set-field
-  statusline.section_location = function() return '%2l:%-2v' end
 end
 
 -- ============================================================
--- SECTION 4: SEARCH & NAVIGATION
--- Telescope setup, keymaps, LSP picker mappings
--- ============================================================
-do
-  ---@type (string|vim.pack.Spec)[]
-  local telescope_plugins = {
-    gh 'nvim-lua/plenary.nvim',
-    gh 'nvim-telescope/telescope.nvim',
-    gh 'nvim-telescope/telescope-ui-select.nvim',
-  }
-  if vim.fn.executable 'make' == 1 then table.insert(telescope_plugins, gh 'nvim-telescope/telescope-fzf-native.nvim') end
-
-  -- NOTE: Install multiple plugins at once
-  vim.pack.add(telescope_plugins)
-
-  require('telescope').setup {
-    defaults = {
-      mappings = {
-        i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-      },
-    },
-    -- pickers = {}
-    extensions = {
-      ['ui-select'] = { require('telescope.themes').get_dropdown() },
-    },
-  }
-
-  -- Enable Telescope extensions if they are installed
-  pcall(require('telescope').load_extension, 'fzf')
-  pcall(require('telescope').load_extension, 'ui-select')
-
-  -- See `:help telescope.builtin`
-  local builtin = require 'telescope.builtin'
-  vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
-  vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-  vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-  vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-  vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-  vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
-  vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
-  vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-  vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-  vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
-  vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
-
-  -- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
-  -- If you later switch picker plugins, this is where to update these mappings.
-  vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('telescope-lsp-attach', { clear = true }),
-    callback = function(event)
-      local buf = event.buf
-
-      -- Find references for the word under your cursor.
-      vim.keymap.set('n', 'grr', builtin.lsp_references, { buffer = buf, desc = '[G]oto [R]eferences' })
-
-      -- Jump to the implementation of the word under your cursor.
-      -- Useful when your language has ways of declaring types without an actual implementation.
-      vim.keymap.set('n', 'gri', builtin.lsp_implementations, { buffer = buf, desc = '[G]oto [I]mplementation' })
-
-      -- Jump to the definition of the word under your cursor.
-      -- This is where a variable was first declared, or where a function is defined, etc.
-      -- To jump back, press <C-t>.
-      vim.keymap.set('n', 'grd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
-
-      -- Fuzzy find all the symbols in your current document.
-      -- Symbols are things like variables, functions, types, etc.
-      vim.keymap.set('n', 'gO', builtin.lsp_document_symbols, { buffer = buf, desc = 'Open Document Symbols' })
-
-      -- Fuzzy find all the symbols in your current workspace.
-      -- Similar to document symbols, except searches over your entire project.
-      vim.keymap.set('n', 'gW', builtin.lsp_dynamic_workspace_symbols, { buffer = buf, desc = 'Open Workspace Symbols' })
-
-      -- Jump to the type of the word under your cursor.
-      -- Useful when you're not sure what type a variable is and you want to see
-      -- the definition of its *type*, not where it was *defined*.
-      vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, { buffer = buf, desc = '[G]oto [T]ype Definition' })
-    end,
-  })
-
-  -- Override default behavior and theme when searching
-  vim.keymap.set('n', '<leader>/', function()
-    -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-    builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-      winblend = 10,
-      previewer = false,
-    })
-  end, { desc = '[/] Fuzzily search in current buffer' })
-
-  -- It's also possible to pass additional configuration options.
-  --  See `:help telescope.builtin.live_grep()` for information about particular keys
-  vim.keymap.set(
-    'n',
-    '<leader>s/',
-    function()
-      builtin.live_grep {
-        grep_open_files = true,
-        prompt_title = 'Live Grep in Open Files',
-      }
-    end,
-    { desc = '[S]earch [/] in Open Files' }
-  )
-
-  -- Shortcut for searching your Neovim configuration files
-  vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
-end
-
--- ============================================================
--- SECTION 5: LSP
+-- SECTION 4: LSP
 -- LSP keymaps, server configuration, Mason tools installations
 -- ============================================================
 do
