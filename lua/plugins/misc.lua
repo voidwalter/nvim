@@ -4,9 +4,10 @@ local plugins = {
   'https://github.com/MunifTanjim/nui.nvim',
   'https://github.com/lukas-reineke/indent-blankline.nvim',
   'https://github.com/windwp/nvim-autopairs',
-  'NMAC427/guess-indent.nvim',
-  'folke/which-key.nvim',
-  'folke/todo-comments.nvim',
+  'https://github.com/NMAC427/guess-indent.nvim',
+  'https://github.com/folke/which-key.nvim',
+  'https://github.com/folke/todo-comments.nvim',
+  'https://github.com/onsails/lspkind.nvim',
 }
 
 if vim.g.have_nerd_font then
@@ -39,9 +40,50 @@ require('which-key').setup {
   },
 }
 
+require('lspkind').init {
+  -- options: 'text', 'text_symbol', 'symbol_text', 'symbol'
+  mode = 'symbol_text',
+  preset = 'default',
+
+  symbol_map = {
+    Text = '',
+    Method = '󰆧',
+    Function = '󰊕',
+    Constructor = '',
+    Field = '󰇽',
+    Variable = '󰂡',
+    Class = '󰠱',
+    Interface = '',
+    Module = '',
+    Property = '󰜢',
+    Unit = '',
+    Value = '󰎠',
+    Enum = '',
+    Keyword = '󰌋',
+    Snippet = '',
+    Color = '󰏘',
+    File = '󰈙',
+    Reference = '',
+    Folder = '󰉋',
+    EnumMember = '',
+    Constant = '󰏿',
+    Struct = '',
+    Event = '',
+    Operator = '󰆕',
+    TypeParameter = '󰅲',
+  },
+}
+
 require('todo-comments').setup { signs = false }
 require('nvim-autopairs').setup {}
 
-require('ibl').setup {}
+require('ibl').setup {
+  exclude = {
+    filetypes = {
+      'dashboard',
+      'dashboard-nvim',
+    },
+  },
+}
 
 require('guess-indent').setup {}
