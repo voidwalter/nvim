@@ -6,6 +6,7 @@ local plugins = {
     src = 'https://github.com/nvim-telescope/telescope.nvim',
     version = 'v0.2.2',
     dependencies = {
+      'https://github.com/nvim-tree/nvim-web-devicons',
       'https://github.com/nvim-lua/plenary.nvim',
       'https://github.com/nvim-telescope/telescope-ui-select.nvim',
       { 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
@@ -106,7 +107,7 @@ require('barbar').setup {
     },
     filetype = {
       custom_colors = false,
-      enabled = false,
+      enabled = true,
     },
     separator = { left = '▎', right = '' },
 
