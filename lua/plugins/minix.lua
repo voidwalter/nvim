@@ -9,6 +9,9 @@ vim.pack.add(plugins)
 
 require('mini.surround').setup()
 
+-- mini.diff
+require('mini.diff').setup()
+
 -- mini animate
 local animate = require 'mini.animate'
 animate.setup {

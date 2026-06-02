@@ -2,9 +2,9 @@
 -- Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 
 do
-  -- require 'plugins.debug'
   require 'plugins.navigation'
   require 'plugins.completion'
+  require 'plugins.debug'
   require 'plugins.formating'
   require 'plugins.interface'
   require 'plugins.minix'
@@ -17,7 +17,8 @@ do
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ' '
   vim.g.have_nerd_font = true
-  vim.o.mouse = 'a'
+  vim.o.mouse = ''
+  vim.o.mousemodel = 'extend'
   vim.o.number = true
   vim.o.relativenumber = true
   vim.o.showmode = false

@@ -106,7 +106,7 @@ require('barbar').setup {
     },
     filetype = {
       custom_colors = false,
-      enabled = true,
+      enabled = false,
     },
     separator = { left = '▎', right = '' },
 
