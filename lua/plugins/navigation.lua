@@ -1,7 +1,6 @@
 -- search and navigation
 
 local plugins = {
-  'https://github.com/romgrk/barbar.nvim',
   {
     src = 'https://github.com/nvim-telescope/telescope.nvim',
     version = 'v0.2.2',
@@ -11,7 +10,9 @@ local plugins = {
       'https://github.com/nvim-telescope/telescope-ui-select.nvim',
       { 'https://github.com/nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
     },
-  },
+  },'https://github.com/nvim-lua/plenary.nvim',
+  'https://github.com/romgrk/barbar.nvim',
+      'https://github.com/nvim-tree/nvim-web-devicons',
 }
 
 vim.pack.add(plugins)
@@ -78,20 +79,18 @@ vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.s
 -- ===============
 -- buffer (barbar)
 
--- others
-
 require('barbar').setup {
   animation = true,
   auto_hide = true,
   clickable = true,
   focus_on_close = 'left',
   highlight_alternate = false,
-  highlight_inactive_file_icons = false,
+  highlight_inactive_file_icons = true,
   highlight_visible = true,
   no_name_title = nil,
   sort = { ignore_case = true },
   icons = {
-    buffer_index = false,
+    buffer_index = true,
     buffer_number = false,
     button = '',
     diagnostics = {
@@ -106,7 +105,7 @@ require('barbar').setup {
       deleted = { enabled = false, icon = '-' },
     },
     filetype = {
-      custom_colors = false,
+      custom_colors = true,
       enabled = true,
     },
     separator = { left = '▎', right = '' },
@@ -118,9 +117,9 @@ require('barbar').setup {
     -- Use a preconfigured buffer appearance— can be 'default', 'powerline', or 'slanted'
     preset = 'slanted',
 
-    alternate = { filetype = { enabled = false } },
+    alternate = { filetype = { enabled = true } },
     current = { buffer_index = true },
     inactive = { button = '×' },
-    visible = { modified = { buffer_number = false } },
+    visible = { modified = { buffer_number = true } },
   },
 }

@@ -328,6 +328,17 @@ do
     gh 'WhoIsSethDaniel/mason-tool-installer.nvim',
   }
 
+  -- local lspconfig = vim.lsp.config
+  -- lspconfig.hyprlang.setup {
+  --   cmd = { 'hyprls' },
+  --   settings = {
+  --     hyprls = {
+  --       preferIgnoreFile = false,
+  --       ignore = { 'hyprlock.conf', 'hypridle.conf' },
+  --     },
+  --   },
+  -- }
+
   require('mason').setup {}
 
   local ensure_installed = vim.tbl_keys(servers or {})
